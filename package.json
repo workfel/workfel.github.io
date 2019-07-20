@@ -1,0 +1,20 @@
+{
+  "name": "workfel.github.io",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build" : "gitfolio  build workfel --twitter JohanPujol --linkedin johan-pujol-5428b86a --medium JohanPujol --background https://cdn.pixabay.com/photo/2016/11/01/18/38/background-1789175_960_720.png"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/workfel/workfel.github.io.git"
+  },
+  "author": "workfel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/workfel/workfel.github.io/issues"
+  },
+  "homepage": "https://github.com/workfel/workfel.github.io#readme"
+}
