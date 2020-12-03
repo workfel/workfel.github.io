@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "name": "Github",
+    "link": "https://github.com/workfel",
+    "icon": "/icons/github.svg"
+  },
+  {
+    "id": 2,
+    "name": "Twitter",
+    "link": "https://twitter.com/JohanPujol",
+    "icon": "/icons/twitter.svg"
+  }
+]
