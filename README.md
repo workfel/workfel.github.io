@@ -5,7 +5,7 @@
 
 - 🔭 I’m currently working at [Digikare](https://digikare.com)
 
-- 🌱 I’m currently learning **TDD/ Clean Architecture**
+- 🌱 **TDD/ Clean Architecture**
 
 - 👨‍💻 All of my projects are available at [http://workfel.github.io/](http://workfel.github.io/)
 
@@ -13,7 +13,7 @@
 
 - 📫 How to reach me **workfel@gmail.com**
 
-- 📄 Know about my experiences [Start learning development since 2010](Start learning development since 2010)
+- 📄 Know about my experiences [Start learning development since 2009](Start learning development since 2009)
 
 - ⚡ Fun fact **I'm a Triathlon & Ski addict**
 
