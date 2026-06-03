@@ -6,4 +6,8 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://workfel.github.io',
   base: '/',
+  build: {
+    // inline the (small) CSS into the HTML so it never render-blocks
+    inlineStylesheets: 'always',
+  },
 });

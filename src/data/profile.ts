@@ -17,8 +17,6 @@ export interface Profile {
   kicker: string;
   /** Current year, shown in the hero top line */
   year: number;
-  /** Path to the avatar image (under /public) */
-  avatar: string;
   /** Year Johan started developing — drives the "years coding" hero stat */
   codingSince: number;
   socials: Social[];
@@ -32,7 +30,6 @@ export const profile: Profile = {
   location: "Aveyron, France",
   kicker: "Software Craftsmanship · Aveyron",
   year: 2026,
-  avatar: "/assets/johan.png",
   codingSince: 2009,
   socials: [
     { label: "workfel", network: "GitHub", url: "https://github.com/workfel" },
