@@ -1,0 +1,40 @@
+---
+import { STAGES, type Stage } from '../data/apps';
+
+interface Props {
+  stage: Stage;
+}
+
+const { stage } = Astro.props;
+
+const labels: Record<Stage, string> = {
+  idea: 'Idea',
+  wip: 'In progress',
+  beta: 'Beta',
+  shipped: 'Shipped',
+};
+
+const n = STAGES.length;
+const currentIndex = Math.max(0, STAGES.indexOf(stage));
+const edge = 100 / (2 * n); // distance from container edge to first/last node centre
+const span = 100 - 2 * edge; // distance between first and last node centres
+const fillPct = n > 1 ? (currentIndex / (n - 1)) * span : 0;
+---
+
+<div class="stepper" style={`--fill:${fillPct}%`}>
+  <div class="stepper-track">
+    <span class="stepper-base" style={`left:${edge}%;width:${span}%`}></span>
+    <span class="stepper-fill" style={`left:${edge}%`}></span>
+    {
+      STAGES.map((s, i) => (
+        <div
+          class:list={['step', { done: i <= currentIndex, current: i === currentIndex }]}
+          style={`--si:${i}`}
+        >
+          <span class="node" />
+          <span class="step-label">{labels[s]}</span>
+        </div>
+      ))
+    }
+  </div>
+</div>

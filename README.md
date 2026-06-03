@@ -1,36 +1,73 @@
-<h1 align="center">Hi 👋, I'm Workfel</h1>
-<h3 align="center">I’m a Frontend & Backend engineer</h3>
+# workfel.github.io — Johan Pujol portfolio
 
-<p align="left"> <a href="https://twitter.com/johanpujol" target="blank"><img src="https://img.shields.io/twitter/follow/johanpujol?logo=twitter&style=for-the-badge" alt="johanpujol" /></a> </p>
+One-page "indie software" portfolio: a profile hero, then my deployed apps as
+full-width bands. Built with [Astro](https://astro.build/) and shipped as a
+fully static site to GitHub Pages.
 
-- 🔭 I’m currently working at [Digikare](https://digikare.com)
+## Stack
 
-- 🌱 **TDD/ Clean Architecture**
+- **Astro** (static output, no client framework)
+- Vanilla CSS with theme tokens (dark / light), custom cursor, scroll reveal
+- Google Fonts: Anton (display), Archivo (body), Space Mono (labels)
 
-- 👨‍💻 All of my projects are available at [http://workfel.github.io/](http://workfel.github.io/)
+## Develop
 
-- 💬 Ask me about **Angular, Nest, Typescript, Node**
+```bash
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # outputs to dist/
+npm run preview  # serve the production build
+```
 
-- 📫 How to reach me **workfel@gmail.com**
+Requires Node 22 (see `.nvmrc`).
 
-- 📄 Know about my experiences [Start learning development since 2009](Start learning development since 2009)
+## Adding / editing an app
 
-- ⚡ Fun fact **I'm a Triathlon & Ski addict**
+Everything on the page is **data-driven** — the only thing you edit to add an
+app is `src/data/apps.ts`. Append an object to the `apps` array:
 
-### Blogs posts
-<!-- BLOG-POST-LIST:START -->
-<!-- BLOG-POST-LIST:END -->
+```ts
+{
+  name: 'Newapp',
+  kicker: 'One short line above the name.',
+  description: 'One or two sentences describing the app.',
+  type: 'Subscription',        // 'Free' | 'Subscription' | 'Freemium' | 'One-time'
+  stage: 'beta',               // 'idea' | 'build' | 'beta' | 'live'
+  launchYear: 2026,
+  stack: ['Astro', 'Postgres'],
+  url: 'https://newapp.com',
+  provider: 'stripe',          // optional — 'stripe' | 'polar' (paid apps only)
+  providerUrl: 'https://newapp.com/pricing', // optional — checkout / product page
+}
+```
 
-<h3 align="left">Connect with me:</h3>
-<p align="left">
-<a href="https://dev.to/workfel" target="blank"><img align="center" src="https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/dev-dot-to.svg" alt="workfel" height="30" width="40" /></a>
-<a href="https://twitter.com/johanpujol" target="blank"><img align="center" src="https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/twitter.svg" alt="johanpujol" height="30" width="40" /></a>
-<a href="https://medium.com/@johanpujol" target="blank"><img align="center" src="https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/medium.svg" alt="@johanpujol" height="30" width="40" /></a>
-</p>
+What updates **automatically** (never edit by hand):
 
-<h3 align="left">Languages and Tools:</h3>
-<p align="left"> <a href="https://angular.io" target="_blank"> <img src="https://devicons.github.io/devicon/devicon.git/icons/angularjs/angularjs-original.svg" alt="angularjs" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank"> <img src="https://devicons.github.io/devicon/devicon.git/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/> </a> <a href="https://jestjs.io" target="_blank"> <img src="https://www.vectorlogo.zone/logos/jestjsio/jestjsio-icon.svg" alt="jest" width="40" height="40"/> </a> <a href="https://nodejs.org" target="_blank"> <img src="https://devicons.github.io/devicon/devicon.git/icons/nodejs/nodejs-original-wordmark.svg" alt="nodejs" width="40" height="40"/> </a> <a href="https://postman.com" target="_blank"> <img src="https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg" alt="postman" width="40" height="40"/> </a> <a href="https://reactjs.org/" target="_blank"> <img src="https://devicons.github.io/devicon/devicon.git/icons/react/react-original-wordmark.svg" alt="react" width="40" height="40"/> </a> <a href="https://redux.js.org" target="_blank"> <img src="https://devicons.github.io/devicon/devicon.git/icons/redux/redux-original.svg" alt="redux" width="40" height="40"/> </a> <a href="https://www.typescriptlang.org/" target="_blank"> <img src="https://devicons.github.io/devicon/devicon.git/icons/typescript/typescript-original.svg" alt="typescript" width="40" height="40"/> </a> </p>
+- The hero stats — **apps shipped**, **live in the wild**, **building since** —
+  are computed from the list (`stats` in `src/data/apps.ts`).
+- The "Selected work" counter.
+- The band index numbers (01, 02, …).
+- The maturity stepper (Idea → Build → Beta → Live) and the status pill, both
+  derived from `stage`.
 
-<p><img align="left" src="https://github-readme-stats.vercel.app/api/top-langs?username=workfel&show_icons=true&locale=en&layout=compact" alt="workfel" /></p>
+There are **no time-evolving metrics** (no revenue, no user counts, no charts):
+the site stays static and never needs upkeep beyond adding an app.
 
-<p>&nbsp;<img align="center" src="https://github-readme-stats.vercel.app/api?username=workfel&show_icons=true&locale=en" alt="workfel" /></p>
+### Paid apps & payment providers
+
+For a paid app, set `provider` (`stripe` or `polar`) and `providerUrl`. The band
+then shows a clickable **Stripe ↗ / Polar ↗** tag pointing at the checkout /
+product page. Because the site is static and the repo is public, **no API keys
+are ever stored or fetched** — the provider link is the connection to Stripe /
+Polar.
+
+### Personal info
+
+Name, tagline, bio, location and social links live in `src/data/profile.ts`.
+The avatar is `public/assets/johan.png`.
+
+## Deployment
+
+Pushing to `master` triggers `.github/workflows/deploy.yml`, which builds the
+site and publishes `dist/` via the official GitHub Pages action. In the repo
+settings, set **Pages → Build and deployment → Source** to **GitHub Actions**.

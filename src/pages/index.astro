@@ -1,0 +1,127 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TopBar from '../components/TopBar.astro';
+import Hero from '../components/Hero.astro';
+import AppBand from '../components/AppBand.astro';
+import Footer from '../components/Footer.astro';
+import { apps, stats } from '../data/apps';
+
+const workCount = String(stats.appsCount).padStart(2, '0');
+---
+
+<Layout title="Johan Pujol — Indie Software">
+  <div class="cursor" id="cursor"></div>
+  <div class="dot-cursor" id="cursorDot"></div>
+
+  <TopBar />
+
+  <main class="wrap" id="top">
+    <Hero />
+
+    <section id="work">
+      <div class="work-head reveal">
+        <span class="mono k">Selected work</span>
+        <span class="mono">Shipped &amp; in the wild — {workCount}</span>
+      </div>
+
+      {apps.map((app, i) => <AppBand app={app} index={i + 1} />)}
+    </section>
+
+    <Footer />
+  </main>
+</Layout>
+
+<script>
+  (function () {
+    const root = document.documentElement;
+
+    /* ---------- theme toggle ---------- */
+    const toggle = document.getElementById('themeToggle');
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+        const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        root.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('jp-theme', next);
+        } catch (e) {}
+      });
+    }
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const coarse = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
+    /* ---------- custom cursor ---------- */
+    if (!coarse) {
+      const ring = document.getElementById('cursor');
+      const dot = document.getElementById('cursorDot');
+      if (ring && dot) {
+        let mx = window.innerWidth / 2;
+        let my = window.innerHeight / 2;
+        let rx = mx;
+        let ry = my;
+        let shown = false;
+        document.addEventListener('mousemove', function (e) {
+          mx = e.clientX;
+          my = e.clientY;
+          dot.style.left = mx + 'px';
+          dot.style.top = my + 'px';
+          if (!shown) {
+            shown = true;
+            ring.classList.add('show');
+            dot.classList.add('show');
+          }
+        });
+        document.addEventListener('mouseleave', function () {
+          ring.classList.remove('show');
+          dot.classList.remove('show');
+          shown = false;
+        });
+        const loop = function () {
+          rx += (mx - rx) * 0.16;
+          ry += (my - ry) * 0.16;
+          ring.style.left = rx + 'px';
+          ring.style.top = ry + 'px';
+          requestAnimationFrame(loop);
+        };
+        loop();
+        const hot = document.querySelectorAll('a, [data-interactive], .avatar');
+        hot.forEach(function (el) {
+          el.addEventListener('mouseenter', function () {
+            ring.classList.add('grow');
+          });
+          el.addEventListener('mouseleave', function () {
+            ring.classList.remove('grow');
+          });
+        });
+      }
+    }
+
+    /* ---------- scroll reveal ---------- */
+    const revealEls = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+    function showEl(el: Element) {
+      el.classList.add('in');
+    }
+    if (reduce) {
+      revealEls.forEach(showEl);
+    } else {
+      const checkReveal = function () {
+        const vh = window.innerHeight || document.documentElement.clientHeight;
+        for (let i = 0; i < revealEls.length; i++) {
+          const el = revealEls[i];
+          if (el.classList.contains('in')) continue;
+          const r = el.getBoundingClientRect();
+          if (r.top < vh * 0.92 && r.bottom > 0) showEl(el);
+        }
+      };
+      checkReveal();
+      requestAnimationFrame(checkReveal);
+      window.addEventListener('load', checkReveal);
+      window.addEventListener('scroll', checkReveal, { passive: true });
+      window.addEventListener('resize', checkReveal);
+      /* safety net: never leave content hidden */
+      setTimeout(function () {
+        revealEls.forEach(showEl);
+      }, 2600);
+    }
+  })();
+</script>

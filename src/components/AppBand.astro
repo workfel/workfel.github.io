@@ -1,0 +1,80 @@
+---
+import StageStepper from './StageStepper.astro';
+import { statusFor, isPaid, type App } from '../data/apps';
+
+interface Props {
+  app: App;
+  index: number; // 1-based position in the list
+}
+
+const { app, index } = Astro.props;
+const idx = String(index).padStart(2, '0');
+const status = statusFor(app.stage);
+const paid = isPaid(app);
+const providerName = app.provider === 'stripe' ? 'Stripe' : app.provider === 'polar' ? 'Polar' : '';
+const host = app.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+const nameChars = [...app.name];
+---
+
+<article class="band reveal" data-interactive style={app.accent ? `--app-accent:${app.accent}` : undefined}>
+  <div class="band-inner">
+    <div class="band-left">
+      <div class="band-kicker mono">
+        <span class="idx">{idx}</span>
+        <span class="sep"></span>
+        <span class="text">{app.kicker}</span>
+      </div>
+      <!-- the app name is the primary link; its ::after stretches over the band -->
+      <a class="band-primary" href={app.url} target="_blank" rel="noopener" aria-label={`Open ${app.name}`}>
+        <h2 class="band-name" aria-hidden="true">
+          <span class="band-name-letters">
+            {
+              nameChars.map((ch, i) =>
+                ch === ' ' ? (
+                  <span class="fl fl-space">&nbsp;</span>
+                ) : (
+                  <span class="fl" style={`--i:${i}`}>
+                    <span class="fl-inner">
+                      <span class="fl-face fl-front">{ch}</span>
+                      <span class="fl-face fl-back">{ch}</span>
+                    </span>
+                  </span>
+                )
+              )
+            }
+          </span><span class="arrow">↗</span>
+        </h2>
+      </a>
+      <p class="band-desc">{app.description}</p>
+      <div class="band-meta">
+        <span class="status mono" data-s={status.key}><span class="led"></span>{status.label}</span>
+        {app.stack.map((tech) => <span class="tag mono">{tech}</span>)}
+        {
+          paid && (
+            <a
+              class="tag mono tag-provider"
+              href={app.providerUrl ?? app.url}
+              target="_blank"
+              rel="noopener"
+              aria-label={`Subscribe / pay via ${providerName}`}
+            >
+              <svg class="pay-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="2" y="5" width="20" height="14" rx="2.5" />
+                <path d="M2 10h20" />
+              </svg>
+              {providerName}
+            </a>
+          )
+        }
+        <span class="band-link mono">{host} <span aria-hidden="true">↗</span></span>
+      </div>
+    </div>
+
+    <div class="band-side">
+      <span class="launched-label mono">Launched</span>
+      <div class="year">{app.launchYear}</div>
+      <span class="type-pill mono" data-free={app.type === 'Free' ? '1' : '0'}>{app.type}</span>
+      <StageStepper stage={app.stage} />
+    </div>
+  </div>
+</article>

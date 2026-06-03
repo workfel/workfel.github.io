@@ -1,0 +1,19 @@
+---
+import { profile } from '../data/profile';
+---
+
+<footer class="foot reveal">
+  <div>
+    <div class="big">Let's build something.</div>
+    <span class="mono">{profile.name} — {profile.location}</span>
+  </div>
+  <div class="socials">
+    {
+      profile.socials.map((s) => (
+        <a class="social" href={s.url} target="_blank" rel="noopener">
+          <span class="mono">{s.network} ↗</span>
+        </a>
+      ))
+    }
+  </div>
+</footer>
