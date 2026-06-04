@@ -13,6 +13,8 @@
   --archived: #74747a;
   --maxw: 1320px;
   --pad: clamp(20px, 5vw, 80px);
+  /* semi-opaque backdrop for the fixed top bar once the page is scrolled */
+  --topbar-bg: rgba(22, 19, 16, 0.72);
 }
 
 html[data-theme="light"] {
@@ -27,6 +29,7 @@ html[data-theme="light"] {
   --live: #11a86b;
   --beta: #c97d12;
   --archived: #8d8a80;
+  --topbar-bg: rgba(243, 239, 230, 0.78);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -67,6 +70,16 @@ a { color: inherit; text-decoration: none; }
   justify-content: space-between;
   padding: 18px var(--pad);
   pointer-events: none;
+  border-bottom: 1px solid transparent;
+  transition: background 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease;
+}
+/* once scrolled off the hero, give the bar a frosted backdrop so content
+   passing underneath stays muted and the nav stays legible */
+.topbar.scrolled {
+  background: var(--topbar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom-color: var(--line);
 }
 .topbar a, .topbar button { pointer-events: auto; }
 .brand {
@@ -245,7 +258,7 @@ html[data-theme="light"] .theme-toggle .knob { left: 34px; }
 /* ---------- section label ---------- */
 .work-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 20px;
   padding: clamp(40px, 7vh, 80px) 0 18px;
@@ -253,6 +266,7 @@ html[data-theme="light"] .theme-toggle .knob { left: 34px; }
   color: var(--muted);
 }
 .work-head .k { color: var(--accent); }
+.work-head-tools { display: flex; align-items: center; gap: 16px; }
 
 /* ---------- app bands ---------- */
 .band {
@@ -504,6 +518,144 @@ a.tag-provider .pay-ic { width: 14px; height: 14px; display: block; }
 .stepper-fill { width: 0; }
 .reveal.in .stepper-fill { width: var(--fill, 0%); }
 
+/* ---------- view switch (list ⇄ grid) ---------- */
+.view-switch {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  transition: border-color 0.3s;
+}
+.view-switch:hover { border-color: var(--accent); }
+.vbtn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 24px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s;
+}
+.vbtn svg { width: 15px; height: 15px; display: block; }
+.vbtn:hover { color: var(--text); }
+.vbtn[aria-pressed="true"] { background: var(--accent); color: #fff; }
+
+/* ====================================================================
+   COMPACT GRID VIEW
+   Same DOM as the editorial list — re-laid-out into a brutalist card
+   grid so the whole catalogue reads at a glance. Driven by
+   html[data-view="grid"]; the default (no attribute) is the list view.
+   ==================================================================== */
+html[data-view="grid"] #work {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+html[data-view="grid"] .work-head { grid-column: 1 / -1; margin-bottom: 4px; }
+
+html[data-view="grid"] .band {
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--line);
+  padding: clamp(22px, 2vw, 30px);
+  display: flex;
+  transition: border-color 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+html[data-view="grid"] .band:hover {
+  border-color: var(--app-accent, var(--accent));
+  border-top-color: var(--app-accent, var(--accent));
+  transform: translateY(-3px);
+}
+/* the hover wash is already inset:0 on .band::before — fits the card as-is */
+
+html[data-view="grid"] .band-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+}
+html[data-view="grid"] .band-left {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+html[data-view="grid"] .band-kicker { margin-bottom: 10px; }
+html[data-view="grid"] .band-kicker .text {
+  flex: 1;
+  min-width: 0;
+  /* wrap rather than truncate — avoids the flex min-content overflow trap
+     and keeps the full one-liner readable; footer stays pinned via margin-top:auto */
+  white-space: normal;
+}
+
+html[data-view="grid"] .band-name {
+  font-size: clamp(2rem, 3vw, 2.7rem);
+  line-height: 0.92;
+}
+/* keep the flip-board readable on shorter cards */
+html[data-view="grid"] .band-name-letters { white-space: normal; }
+
+html[data-view="grid"] .band-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.95rem;
+  margin: 14px 0 16px;
+  min-height: 2.9em;
+}
+
+html[data-view="grid"] .band-meta {
+  margin-top: auto;
+  gap: 8px;
+}
+html[data-view="grid"] .band-meta .tag { padding: 5px 9px; font-size: 0.66rem; }
+html[data-view="grid"] .status { padding: 6px 11px; }
+/* drop the long host link in cards — the whole card is the link anyway */
+html[data-view="grid"] .band-link { display: none; }
+
+/* right column collapses into a slim footer strip */
+html[data-view="grid"] .band-side {
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 18px;
+  padding-top: 15px;
+  border-top: 1px solid var(--line);
+}
+html[data-view="grid"] .launched-label { order: 0; }
+html[data-view="grid"] .year {
+  font-family: "Anton", sans-serif;
+  font-size: 1.15rem;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-align: left;
+  order: 1;
+}
+html[data-view="grid"] .type-pill { order: 2; margin-left: auto; padding: 5px 12px; }
+html[data-view="grid"] .stepper {
+  order: 3;
+  flex-basis: 100%;
+  max-width: 100%;
+  margin-top: 6px;
+}
+html[data-view="grid"] .step .step-label { font-size: 0.55rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-view="grid"] .band { transition: border-color 0.4s ease; }
+  html[data-view="grid"] .band:hover { transform: none; }
+}
+
 /* ---------- reveal ---------- */
 .reveal { opacity: 0; transform: translateY(34px); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); }
 .reveal.in { opacity: 1; transform: none; }
@@ -573,6 +725,9 @@ a.tag-provider .pay-ic { width: 14px; height: 14px; display: block; }
 @media (max-width: 560px) {
   .stats { grid-template-columns: 1fr; }
   .topbar nav { gap: 16px; }
+  /* keep the density switch, drop the long caption to make room for it */
+  .work-head { flex-wrap: wrap; gap: 12px; }
+  .work-count { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

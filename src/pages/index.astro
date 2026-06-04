@@ -21,7 +21,26 @@ const workCount = String(stats.appsCount).padStart(2, '0');
     <section id="work">
       <div class="work-head reveal">
         <span class="mono k">Selected work</span>
-        <span class="mono">Shipped &amp; in the wild — {workCount}</span>
+        <div class="work-head-tools">
+          <span class="mono work-count">Shipped &amp; in the wild — {workCount}</span>
+          <div class="view-switch" role="group" aria-label="Work layout density">
+            <button class="vbtn" type="button" data-view-set="list" aria-label="Editorial list view" aria-pressed="false" data-interactive>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"
+                ><path d="M4 6h16M4 12h16M4 18h16"></path></svg
+              >
+            </button>
+            <button class="vbtn" type="button" data-view-set="grid" aria-label="Compact grid view" aria-pressed="false" data-interactive>
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                ><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect
+                  x="3"
+                  y="13"
+                  width="8"
+                  height="8"
+                  rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg
+              >
+            </button>
+          </div>
+        </div>
       </div>
 
       {apps.map((app, i) => <AppBand app={app} index={i + 1} />)}
@@ -47,8 +66,53 @@ const workCount = String(stats.appsCount).padStart(2, '0');
       });
     }
 
+    /* ---------- work layout density (list ⇄ grid) ---------- */
+    const viewBtns = Array.prototype.slice.call(document.querySelectorAll('[data-view-set]'));
+    function reflectView(view: string) {
+      viewBtns.forEach(function (b) {
+        b.setAttribute('aria-pressed', b.getAttribute('data-view-set') === view ? 'true' : 'false');
+      });
+    }
+    function applyView(v: string) {
+      const view = v === 'grid' ? 'grid' : 'list';
+      root.setAttribute('data-view', view);
+      reflectView(view);
+      try {
+        localStorage.setItem('jp-view', view); // an explicit click sticks across devices
+      } catch (e) {}
+    }
+    /* sync the buttons with the pre-paint default WITHOUT persisting it,
+       so the device-based default keeps adapting until the visitor picks one */
+    reflectView(root.getAttribute('data-view') === 'grid' ? 'grid' : 'list');
+    viewBtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        applyView(b.getAttribute('data-view-set') || 'list');
+      });
+    });
+
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const coarse = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
+    /* ---------- frosted top bar once scrolled off the hero ---------- */
+    const topbar = document.querySelector('.topbar');
+    if (topbar) {
+      let ticking = false;
+      const syncBar = function () {
+        topbar.classList.toggle('scrolled', window.scrollY > 24);
+        ticking = false;
+      };
+      syncBar();
+      window.addEventListener(
+        'scroll',
+        function () {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(syncBar);
+          }
+        },
+        { passive: true }
+      );
+    }
 
     /* ---------- custom cursor ---------- */
     if (!coarse) {

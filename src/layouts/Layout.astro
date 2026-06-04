@@ -44,6 +44,14 @@ const { title, description = 'Johan Pujol — indie software. The apps that made
           if (saved === 'light' || saved === 'dark') {
             document.documentElement.setAttribute('data-theme', saved);
           }
+          var view = localStorage.getItem('jp-view');
+          if (view !== 'grid' && view !== 'list') {
+            /* no explicit choice yet: grid on desktop, list on mobile.
+               Not persisted, so it keeps adapting to the device until the
+               visitor actually picks a view. */
+            view = window.innerWidth > 900 ? 'grid' : 'list';
+          }
+          document.documentElement.setAttribute('data-view', view);
         } catch (e) {}
       })();
     </script>
