@@ -684,7 +684,7 @@ html[data-view="grid"] .step .step-label { font-size: 0.55rem; }
   position: fixed;
   top: 0; left: 0;
   width: 34px; height: 34px;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--cursor-accent, var(--accent));
   border-radius: 50%;
   pointer-events: none;
   z-index: 90;
@@ -693,17 +693,21 @@ html[data-view="grid"] .step .step-label { font-size: 0.55rem; }
   opacity: 0;
 }
 .cursor.show { opacity: 1; }
-.cursor.grow { width: 64px; height: 64px; background: rgba(255, 77, 109, 0.1); }
+.cursor.grow {
+  width: 64px; height: 64px;
+  background: color-mix(in srgb, var(--cursor-accent, var(--accent)) 11%, transparent);
+}
 .dot-cursor {
   position: fixed;
   top: 0; left: 0;
   width: 5px; height: 5px;
-  background: var(--accent);
+  background: var(--cursor-accent, var(--accent));
   border-radius: 50%;
   pointer-events: none;
   z-index: 91;
   transform: translate(-50%, -50%);
   opacity: 0;
+  transition: background 0.25s;
 }
 .dot-cursor.show { opacity: 1; }
 
@@ -741,3 +745,285 @@ html[data-view="grid"] .step .step-label { font-size: 0.55rem; }
   .band:hover .band-name .fl-inner { transform: none; }
   .band:hover .band-name .fl-front { color: var(--app-accent, var(--accent)); }
 }
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  TEMP — DESKTOP LAYOUT PLAYGROUND (variants A/B/C/D)                ║
+   ║  Everything here is gated by @media (min-width: 1100px), so the     ║
+   ║  mobile / narrow experience is 100% untouched. Driven by            ║
+   ║  html[data-layout]. The floating switcher lets you compare live.    ║
+   ║  When a winner is chosen, delete this whole block + the switcher    ║
+   ║  markup/JS + the .stage/.work-col wrappers, keep only the winner.    ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+
+/* wrappers are invisible until the two-pane shell turns on */
+.stage { display: contents; }
+.work-col { display: contents; }
+
+/* the floating variant switcher is desktop-only (variants only differ there) */
+.layout-switch { display: none; }
+
+@media (min-width: 1100px) {
+  /* ================= shared two-pane shell ================= */
+  html[data-layout] .stage {
+    display: grid;
+    grid-template-columns: minmax(300px, 33%) 1fr;
+    gap: clamp(34px, 4vw, 70px);
+    height: 100svh;
+    box-sizing: border-box;
+    padding-top: 96px;
+    padding-bottom: 26px;
+    align-items: stretch;
+  }
+  /* left rail: the compacted identity */
+  html[data-layout] .hero {
+    padding: 0;
+    align-self: start;
+    max-height: 100%;
+    overflow: hidden;
+  }
+  html[data-layout] .hero-top { margin-bottom: 20px; gap: 16px; }
+  html[data-layout] .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  html[data-layout] .name {
+    font-size: clamp(2.6rem, 4.6vw, 4.4rem);
+    margin-bottom: 0.24em;
+  }
+  html[data-layout] .tagline {
+    font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+    margin-bottom: 0.8em;
+    max-width: 26ch;
+  }
+  html[data-layout] .bio { font-size: 0.92rem; margin-bottom: 1.1em; max-width: 42ch; }
+  html[data-layout] .hero-side { gap: 18px; padding-bottom: 0; }
+  html[data-layout] .stats { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  html[data-layout] .stat .num { font-size: clamp(1.5rem, 2.6vw, 2.1rem); }
+
+  /* right rail: scrolls internally if it ever overflows, so the page itself
+     stays put and the identity rail never moves */
+  html[data-layout] .work-col {
+    display: block;
+    min-width: 0;
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 6px;
+    scrollbar-width: thin;
+  }
+  html[data-layout] .work-head {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    padding-top: 0;
+    padding-bottom: 14px;
+    background: var(--bg);
+  }
+  /* the list/grid density toggle is owned by the variant now */
+  html[data-layout] .view-switch { display: none; }
+
+  /* the floating variant switcher */
+  .layout-switch {
+    position: fixed;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 6px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--topbar-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+  }
+  .layout-switch .ls-label { color: var(--faint); padding: 0 8px; }
+  .layout-switch button {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: "Space Mono", ui-monospace, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 8px 13px;
+    border-radius: 999px;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+  }
+  .layout-switch button:hover { color: var(--text); }
+  .layout-switch button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+
+  /* ============ VARIANT A — "Split" : compact 2×3 card grid ============ */
+  html[data-layout="split-a"] #work {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  html[data-layout="split-a"] .work-head { grid-column: 1 / -1; }
+
+  /* ============ VARIANT C — "Bento" : featured tile + mosaic ============ */
+  html[data-layout="bento-c"] #work {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(150px, auto);
+    gap: 14px;
+  }
+  html[data-layout="bento-c"] .work-head { grid-column: 1 / -1; }
+  /* first app = hero tile spanning both columns */
+  html[data-layout="bento-c"] .band:first-of-type { grid-column: 1 / -1; }
+  html[data-layout="bento-c"] .band:first-of-type .band-name { font-size: clamp(2.6rem, 4vw, 3.6rem); }
+
+  /* shared card treatment for A + C (mirrors the grid-view card look) */
+  html[data-layout="split-a"] .band,
+  html[data-layout="bento-c"] .band {
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--line);
+    padding: clamp(18px, 1.6vw, 26px);
+    display: flex;
+    transition: border-color 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  html[data-layout="split-a"] .band:hover,
+  html[data-layout="bento-c"] .band:hover {
+    border-color: var(--app-accent, var(--accent));
+    border-top-color: var(--app-accent, var(--accent));
+    transform: translateY(-3px);
+  }
+  html[data-layout="split-a"] .band-inner,
+  html[data-layout="bento-c"] .band-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    min-width: 0;
+  }
+  html[data-layout="split-a"] .band-left,
+  html[data-layout="bento-c"] .band-left {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  html[data-layout="split-a"] .band-kicker,
+  html[data-layout="bento-c"] .band-kicker { margin-bottom: 10px; }
+  html[data-layout="split-a"] .band-kicker .text,
+  html[data-layout="bento-c"] .band-kicker .text { flex: 1; min-width: 0; white-space: normal; }
+  html[data-layout="split-a"] .band-name,
+  html[data-layout="bento-c"] .band-name { font-size: clamp(1.8rem, 2.6vw, 2.4rem); line-height: 0.92; }
+  html[data-layout="split-a"] .band-name-letters,
+  html[data-layout="bento-c"] .band-name-letters { white-space: normal; }
+  html[data-layout="split-a"] .band-desc,
+  html[data-layout="bento-c"] .band-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.92rem;
+    margin: 12px 0 14px;
+  }
+  html[data-layout="split-a"] .band-meta,
+  html[data-layout="bento-c"] .band-meta { margin-top: auto; gap: 7px; }
+  html[data-layout="split-a"] .band-meta .tag,
+  html[data-layout="bento-c"] .band-meta .tag { padding: 4px 8px; font-size: 0.64rem; }
+  html[data-layout="split-a"] .band-link,
+  html[data-layout="bento-c"] .band-link { display: none; }
+  html[data-layout="split-a"] .band-side,
+  html[data-layout="bento-c"] .band-side {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin-top: 16px;
+    padding-top: 13px;
+    border-top: 1px solid var(--line);
+  }
+  html[data-layout="split-a"] .launched-label,
+  html[data-layout="bento-c"] .launched-label { order: 0; }
+  html[data-layout="split-a"] .year,
+  html[data-layout="bento-c"] .year { font-size: 1.1rem; line-height: 1; text-align: left; order: 1; }
+  html[data-layout="split-a"] .type-pill,
+  html[data-layout="bento-c"] .type-pill { order: 2; margin-left: auto; padding: 5px 11px; }
+  html[data-layout="split-a"] .stepper,
+  html[data-layout="bento-c"] .stepper { order: 3; flex-basis: 100%; max-width: 100%; margin-top: 4px; }
+  html[data-layout="split-a"] .step .step-label,
+  html[data-layout="bento-c"] .step .step-label { font-size: 0.54rem; }
+
+  /* ============ VARIANT B — "Ledger" : dense rows, title + tagline ============
+     Each row shows, at a glance and WITHOUT hover: the app NAME, its TAGLINE
+     (the kicker, with the index), its status, year and pricing. band-left is
+     display:contents so its children become grid cells of the row. */
+  html[data-layout="ledger-b"] #work { display: flex; flex-direction: column; }
+  html[data-layout="ledger-b"] .band {
+    border-bottom: 1px solid var(--line);
+    padding: clamp(16px, 1.7vw, 24px) 10px;
+  }
+  html[data-layout="ledger-b"] .band:hover { box-shadow: inset 3px 0 0 var(--app-accent, var(--accent)); }
+  html[data-layout="ledger-b"] .band-inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 24px;
+    row-gap: 7px;
+    align-items: center;
+  }
+  html[data-layout="ledger-b"] .band-left { display: contents; }
+
+  /* row 1, left: the name */
+  html[data-layout="ledger-b"] .band-primary { grid-column: 1; grid-row: 1; align-self: end; }
+  html[data-layout="ledger-b"] .band-name {
+    font-size: clamp(1.4rem, 2vw, 1.85rem);
+    line-height: 1;
+    white-space: nowrap;
+  }
+  /* row 2, left: the tagline (index + kicker), always visible */
+  html[data-layout="ledger-b"] .band-kicker {
+    grid-column: 1;
+    grid-row: 2;
+    margin-bottom: 0;
+    align-self: start;
+    gap: 10px;
+    min-width: 0;
+  }
+  html[data-layout="ledger-b"] .band-kicker .sep { width: 14px; }
+  html[data-layout="ledger-b"] .band-kicker .text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* the long description is redundant with the kicker tagline here */
+  html[data-layout="ledger-b"] .band-desc { display: none; }
+  /* row 1, right: status */
+  html[data-layout="ledger-b"] .band-meta {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    align-self: end;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  html[data-layout="ledger-b"] .band-meta .tag:not(.tag-provider) { display: none; }
+  html[data-layout="ledger-b"] .band-link { display: none; }
+  /* row 2, right: year + pricing */
+  html[data-layout="ledger-b"] .band-side {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    align-self: start;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+  html[data-layout="ledger-b"] .launched-label,
+  html[data-layout="ledger-b"] .stepper { display: none; }
+  html[data-layout="ledger-b"] .year { font-size: 1.05rem; line-height: 1; text-align: right; }
+  html[data-layout="ledger-b"] .type-pill { padding: 4px 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-layout] .band { transition: border-color 0.4s ease !important; }
+  html[data-layout] .band:hover { transform: none !important; }
+}
+/* ═══════════════════ END TEMP LAYOUT PLAYGROUND ═══════════════════ */

@@ -42,7 +42,12 @@ const { title, description = 'Johan Pujol — indie software. The apps that made
         try {
           var saved = localStorage.getItem('jp-theme');
           if (saved === 'light' || saved === 'dark') {
+            /* explicit choice (via the toggle) always wins */
             document.documentElement.setAttribute('data-theme', saved);
+          } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            /* no choice yet: follow the OS / browser. The base :root is dark,
+               so we only need to opt into light when the system prefers it. */
+            document.documentElement.setAttribute('data-theme', 'light');
           }
           var view = localStorage.getItem('jp-view');
           if (view !== 'grid' && view !== 'list') {
@@ -52,6 +57,13 @@ const { title, description = 'Johan Pujol — indie software. The apps that made
             view = window.innerWidth > 900 ? 'grid' : 'list';
           }
           document.documentElement.setAttribute('data-view', view);
+
+          /* TEMP: desktop layout variant playground (A/B/C). */
+          var layout = localStorage.getItem('jp-layout');
+          if (['split-a', 'ledger-b', 'bento-c'].indexOf(layout) === -1) {
+            layout = 'split-a';
+          }
+          document.documentElement.setAttribute('data-layout', layout);
         } catch (e) {}
       })();
     </script>

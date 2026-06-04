@@ -16,38 +16,50 @@ const workCount = String(stats.appsCount).padStart(2, '0');
   <TopBar />
 
   <main class="wrap" id="top">
-    <Hero />
+    <div class="stage">
+      <Hero />
 
-    <section id="work">
-      <div class="work-head reveal">
-        <span class="mono k">Selected work</span>
-        <div class="work-head-tools">
-          <span class="mono work-count">Shipped &amp; in the wild — {workCount}</span>
-          <div class="view-switch" role="group" aria-label="Work layout density">
-            <button class="vbtn" type="button" data-view-set="list" aria-label="Editorial list view" aria-pressed="false" data-interactive>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"
-                ><path d="M4 6h16M4 12h16M4 18h16"></path></svg
-              >
-            </button>
-            <button class="vbtn" type="button" data-view-set="grid" aria-label="Compact grid view" aria-pressed="false" data-interactive>
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                ><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect
-                  x="3"
-                  y="13"
-                  width="8"
-                  height="8"
-                  rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg
-              >
-            </button>
+      <div class="work-col">
+        <section id="work">
+          <div class="work-head reveal">
+            <span class="mono k">Selected work</span>
+            <div class="work-head-tools">
+              <span class="mono work-count">Shipped &amp; in the wild — {workCount}</span>
+              <div class="view-switch" role="group" aria-label="Work layout density">
+                <button class="vbtn" type="button" data-view-set="list" aria-label="Editorial list view" aria-pressed="false" data-interactive>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"
+                    ><path d="M4 6h16M4 12h16M4 18h16"></path></svg
+                  >
+                </button>
+                <button class="vbtn" type="button" data-view-set="grid" aria-label="Compact grid view" aria-pressed="false" data-interactive>
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                    ><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect
+                      x="3"
+                      y="13"
+                      width="8"
+                      height="8"
+                      rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg
+                  >
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {apps.map((app, i) => <AppBand app={app} index={i + 1} />)}
-    </section>
+          {apps.map((app, i) => <AppBand app={app} index={i + 1} />)}
+        </section>
+      </div>
+    </div>
 
     <Footer />
   </main>
+
+  <!-- TEMP: desktop layout playground — switch between candidate variants. -->
+  <div class="layout-switch" role="group" aria-label="Desktop layout variant (testing)">
+    <span class="ls-label mono">Layout</span>
+    <button type="button" data-layout-set="split-a" aria-pressed="false" data-interactive>A · Split</button>
+    <button type="button" data-layout-set="ledger-b" aria-pressed="false" data-interactive>B · Ledger</button>
+    <button type="button" data-layout-set="bento-c" aria-pressed="false" data-interactive>C · Bento</button>
+  </div>
 </Layout>
 
 <script>
@@ -90,6 +102,29 @@ const workCount = String(stats.appsCount).padStart(2, '0');
       });
     });
 
+    /* ---------- TEMP: desktop layout variant switch (A/B/C) ---------- */
+    const LAYOUTS = ['split-a', 'ledger-b', 'bento-c'];
+    const layoutBtns = Array.prototype.slice.call(document.querySelectorAll('[data-layout-set]'));
+    function reflectLayout(layout: string) {
+      layoutBtns.forEach(function (b) {
+        b.setAttribute('aria-pressed', b.getAttribute('data-layout-set') === layout ? 'true' : 'false');
+      });
+    }
+    function applyLayout(l: string) {
+      const layout = LAYOUTS.indexOf(l) === -1 ? 'split-a' : l;
+      root.setAttribute('data-layout', layout);
+      reflectLayout(layout);
+      try {
+        localStorage.setItem('jp-layout', layout);
+      } catch (e) {}
+    }
+    reflectLayout(root.getAttribute('data-layout') || 'split-a');
+    layoutBtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        applyLayout(b.getAttribute('data-layout-set') || 'split-a');
+      });
+    });
+
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const coarse = window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
@@ -124,6 +159,7 @@ const workCount = String(stats.appsCount).padStart(2, '0');
         let rx = mx;
         let ry = my;
         let shown = false;
+        let lastTarget: EventTarget | null = null;
         document.addEventListener('mousemove', function (e) {
           mx = e.clientX;
           my = e.clientY;
@@ -133,6 +169,21 @@ const workCount = String(stats.appsCount).padStart(2, '0');
             shown = true;
             ring.classList.add('show');
             dot.classList.add('show');
+          }
+          /* tint the cursor with the accent of the app under it.
+             --app-accent is set on each band and inherited by its children,
+             so reading it off the topmost target covers nested links too. */
+          if (e.target !== lastTarget) {
+            lastTarget = e.target;
+            const accent =
+              e.target instanceof Element
+                ? getComputedStyle(e.target).getPropertyValue('--app-accent').trim()
+                : '';
+            if (accent) {
+              root.style.setProperty('--cursor-accent', accent);
+            } else {
+              root.style.removeProperty('--cursor-accent');
+            }
           }
         });
         document.addEventListener('mouseleave', function () {
