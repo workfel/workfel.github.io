@@ -747,23 +747,19 @@ html[data-view="grid"] .step .step-label { font-size: 0.55rem; }
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  TEMP — DESKTOP LAYOUT PLAYGROUND (variants A/B/C/D)                ║
-   ║  Everything here is gated by @media (min-width: 1100px), so the     ║
-   ║  mobile / narrow experience is 100% untouched. Driven by            ║
-   ║  html[data-layout]. The floating switcher lets you compare live.    ║
-   ║  When a winner is chosen, delete this whole block + the switcher    ║
-   ║  markup/JS + the .stage/.work-col wrappers, keep only the winner.    ║
+   ║  DESKTOP LAYOUT — "Ledger" two-pane (>= 1100px)                    ║
+   ║  A compact identity rail on the left, the work as a dense ledger    ║
+   ║  on the right (name + tagline + status + year + pricing, all        ║
+   ║  visible without hover). Gated by @media (min-width: 1100px), so    ║
+   ║  the mobile / narrow experience is 100% untouched.                  ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 
-/* wrappers are invisible until the two-pane shell turns on */
+/* layout wrappers are transparent until the two-pane shell turns on */
 .stage { display: contents; }
 .work-col { display: contents; }
 
-/* the floating variant switcher is desktop-only (variants only differ there) */
-.layout-switch { display: none; }
-
 @media (min-width: 1100px) {
-  /* ================= shared two-pane shell ================= */
+  /* ================= two-pane shell ================= */
   html[data-layout] .stage {
     display: grid;
     grid-template-columns: minmax(300px, 33%) 1fr;
@@ -819,140 +815,10 @@ html[data-view="grid"] .step .step-label { font-size: 0.55rem; }
     padding-bottom: 14px;
     background: var(--bg);
   }
-  /* the list/grid density toggle is owned by the variant now */
+  /* the list/grid density toggle isn't needed in the two-pane layout */
   html[data-layout] .view-switch { display: none; }
 
-  /* the floating variant switcher */
-  .layout-switch {
-    position: fixed;
-    left: 50%;
-    bottom: 18px;
-    transform: translateX(-50%);
-    z-index: 80;
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    padding: 6px;
-    border: 1px solid var(--line-strong);
-    border-radius: 999px;
-    background: var(--topbar-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
-  }
-  .layout-switch .ls-label { color: var(--faint); padding: 0 8px; }
-  .layout-switch button {
-    border: none;
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    font-family: "Space Mono", ui-monospace, monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.05em;
-    padding: 8px 13px;
-    border-radius: 999px;
-    white-space: nowrap;
-    transition: background 0.2s, color 0.2s;
-  }
-  .layout-switch button:hover { color: var(--text); }
-  .layout-switch button[aria-pressed="true"] { background: var(--accent); color: #fff; }
-
-  /* ============ VARIANT A — "Split" : compact 2×3 card grid ============ */
-  html[data-layout="split-a"] #work {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-  html[data-layout="split-a"] .work-head { grid-column: 1 / -1; }
-
-  /* ============ VARIANT C — "Bento" : featured tile + mosaic ============ */
-  html[data-layout="bento-c"] #work {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: minmax(150px, auto);
-    gap: 14px;
-  }
-  html[data-layout="bento-c"] .work-head { grid-column: 1 / -1; }
-  /* first app = hero tile spanning both columns */
-  html[data-layout="bento-c"] .band:first-of-type { grid-column: 1 / -1; }
-  html[data-layout="bento-c"] .band:first-of-type .band-name { font-size: clamp(2.6rem, 4vw, 3.6rem); }
-
-  /* shared card treatment for A + C (mirrors the grid-view card look) */
-  html[data-layout="split-a"] .band,
-  html[data-layout="bento-c"] .band {
-    border: 1px solid var(--line);
-    border-top: 2px solid var(--line);
-    padding: clamp(18px, 1.6vw, 26px);
-    display: flex;
-    transition: border-color 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  html[data-layout="split-a"] .band:hover,
-  html[data-layout="bento-c"] .band:hover {
-    border-color: var(--app-accent, var(--accent));
-    border-top-color: var(--app-accent, var(--accent));
-    transform: translateY(-3px);
-  }
-  html[data-layout="split-a"] .band-inner,
-  html[data-layout="bento-c"] .band-inner {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    width: 100%;
-    min-width: 0;
-  }
-  html[data-layout="split-a"] .band-left,
-  html[data-layout="bento-c"] .band-left {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-  html[data-layout="split-a"] .band-kicker,
-  html[data-layout="bento-c"] .band-kicker { margin-bottom: 10px; }
-  html[data-layout="split-a"] .band-kicker .text,
-  html[data-layout="bento-c"] .band-kicker .text { flex: 1; min-width: 0; white-space: normal; }
-  html[data-layout="split-a"] .band-name,
-  html[data-layout="bento-c"] .band-name { font-size: clamp(1.8rem, 2.6vw, 2.4rem); line-height: 0.92; }
-  html[data-layout="split-a"] .band-name-letters,
-  html[data-layout="bento-c"] .band-name-letters { white-space: normal; }
-  html[data-layout="split-a"] .band-desc,
-  html[data-layout="bento-c"] .band-desc {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    font-size: 0.92rem;
-    margin: 12px 0 14px;
-  }
-  html[data-layout="split-a"] .band-meta,
-  html[data-layout="bento-c"] .band-meta { margin-top: auto; gap: 7px; }
-  html[data-layout="split-a"] .band-meta .tag,
-  html[data-layout="bento-c"] .band-meta .tag { padding: 4px 8px; font-size: 0.64rem; }
-  html[data-layout="split-a"] .band-link,
-  html[data-layout="bento-c"] .band-link { display: none; }
-  html[data-layout="split-a"] .band-side,
-  html[data-layout="bento-c"] .band-side {
-    flex-direction: row;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px 12px;
-    margin-top: 16px;
-    padding-top: 13px;
-    border-top: 1px solid var(--line);
-  }
-  html[data-layout="split-a"] .launched-label,
-  html[data-layout="bento-c"] .launched-label { order: 0; }
-  html[data-layout="split-a"] .year,
-  html[data-layout="bento-c"] .year { font-size: 1.1rem; line-height: 1; text-align: left; order: 1; }
-  html[data-layout="split-a"] .type-pill,
-  html[data-layout="bento-c"] .type-pill { order: 2; margin-left: auto; padding: 5px 11px; }
-  html[data-layout="split-a"] .stepper,
-  html[data-layout="bento-c"] .stepper { order: 3; flex-basis: 100%; max-width: 100%; margin-top: 4px; }
-  html[data-layout="split-a"] .step .step-label,
-  html[data-layout="bento-c"] .step .step-label { font-size: 0.54rem; }
-
-  /* ============ VARIANT B — "Ledger" : dense rows, title + tagline ============
+  /* ================= the ledger =================
      Each row shows, at a glance and WITHOUT hover: the app NAME, its TAGLINE
      (the kicker, with the index), its status, year and pricing. band-left is
      display:contents so its children become grid cells of the row. */
@@ -1021,9 +887,4 @@ html[data-view="grid"] .step .step-label { font-size: 0.55rem; }
   html[data-layout="ledger-b"] .year { font-size: 1.05rem; line-height: 1; text-align: right; }
   html[data-layout="ledger-b"] .type-pill { padding: 4px 11px; }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  html[data-layout] .band { transition: border-color 0.4s ease !important; }
-  html[data-layout] .band:hover { transform: none !important; }
-}
-/* ═══════════════════ END TEMP LAYOUT PLAYGROUND ═══════════════════ */
+/* ═══════════════════ END DESKTOP LEDGER LAYOUT ═══════════════════ */

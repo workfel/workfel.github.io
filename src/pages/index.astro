@@ -52,14 +52,6 @@ const workCount = String(stats.appsCount).padStart(2, '0');
 
     <Footer />
   </main>
-
-  <!-- TEMP: desktop layout playground — switch between candidate variants. -->
-  <div class="layout-switch" role="group" aria-label="Desktop layout variant (testing)">
-    <span class="ls-label mono">Layout</span>
-    <button type="button" data-layout-set="split-a" aria-pressed="false" data-interactive>A · Split</button>
-    <button type="button" data-layout-set="ledger-b" aria-pressed="false" data-interactive>B · Ledger</button>
-    <button type="button" data-layout-set="bento-c" aria-pressed="false" data-interactive>C · Bento</button>
-  </div>
 </Layout>
 
 <script>
@@ -99,29 +91,6 @@ const workCount = String(stats.appsCount).padStart(2, '0');
     viewBtns.forEach(function (b) {
       b.addEventListener('click', function () {
         applyView(b.getAttribute('data-view-set') || 'list');
-      });
-    });
-
-    /* ---------- TEMP: desktop layout variant switch (A/B/C) ---------- */
-    const LAYOUTS = ['split-a', 'ledger-b', 'bento-c'];
-    const layoutBtns = Array.prototype.slice.call(document.querySelectorAll('[data-layout-set]'));
-    function reflectLayout(layout: string) {
-      layoutBtns.forEach(function (b) {
-        b.setAttribute('aria-pressed', b.getAttribute('data-layout-set') === layout ? 'true' : 'false');
-      });
-    }
-    function applyLayout(l: string) {
-      const layout = LAYOUTS.indexOf(l) === -1 ? 'split-a' : l;
-      root.setAttribute('data-layout', layout);
-      reflectLayout(layout);
-      try {
-        localStorage.setItem('jp-layout', layout);
-      } catch (e) {}
-    }
-    reflectLayout(root.getAttribute('data-layout') || 'split-a');
-    layoutBtns.forEach(function (b) {
-      b.addEventListener('click', function () {
-        applyLayout(b.getAttribute('data-layout-set') || 'split-a');
       });
     });
 

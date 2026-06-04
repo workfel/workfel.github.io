@@ -10,7 +10,7 @@ const { title, description = 'Johan Pujol — indie software. The apps that made
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-layout="ledger-b">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -57,13 +57,6 @@ const { title, description = 'Johan Pujol — indie software. The apps that made
             view = window.innerWidth > 900 ? 'grid' : 'list';
           }
           document.documentElement.setAttribute('data-view', view);
-
-          /* TEMP: desktop layout variant playground (A/B/C). */
-          var layout = localStorage.getItem('jp-layout');
-          if (['split-a', 'ledger-b', 'bento-c'].indexOf(layout) === -1) {
-            layout = 'split-a';
-          }
-          document.documentElement.setAttribute('data-layout', layout);
         } catch (e) {}
       })();
     </script>
