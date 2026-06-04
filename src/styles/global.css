@@ -550,7 +550,10 @@ a.tag-provider .pay-ic { width: 14px; height: 14px; display: block; }
    Same DOM as the editorial list — re-laid-out into a brutalist card
    grid so the whole catalogue reads at a glance. Driven by
    html[data-view="grid"]; the default (no attribute) is the list view.
+   Capped below 1100px: at desktop the two-pane "ledger" layout owns #work,
+   so the grid-view card chrome must not bleed into it.
    ==================================================================== */
+@media (max-width: 1099.98px) {
 html[data-view="grid"] #work {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -655,6 +658,7 @@ html[data-view="grid"] .step .step-label { font-size: 0.55rem; }
   html[data-view="grid"] .band { transition: border-color 0.4s ease; }
   html[data-view="grid"] .band:hover { transform: none; }
 }
+} /* end @media (max-width: 1099.98px) — compact grid view */
 
 /* ---------- reveal ---------- */
 .reveal { opacity: 0; transform: translateY(34px); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); }
