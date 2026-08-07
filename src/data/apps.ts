@@ -44,6 +44,18 @@ export interface App {
  */
 export const apps: App[] = [
   {
+    name: "Futlete",
+    accent: "#f2c14e",
+    kicker: "Turn your Strava profile into a player card rated out of 99.",
+    description:
+      "Connect Strava and get a player card rated out of 99. Six stats measured from real efforts — not vanity totals — on one absolute scale published in full. Challenge anyone to a duel that replays in 3D. Free, six languages, nothing to install.",
+    type: "Free",
+    stage: "shipped",
+    launchYear: 2026,
+    stack: ["Strava API", "Three.js", "PWA"],
+    url: "https://futlete.com/",
+  },
+  {
     name: "Ou-Fly",
     accent: "#2f9bff",
     kicker: "Paragliding, cleared by the weather.",
